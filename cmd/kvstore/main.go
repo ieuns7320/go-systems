@@ -17,4 +17,17 @@ func main() {
 	fmt.Println(string(value))
 	fmt.Println(err)
 	fmt.Println(errors.Is(err, kvstore.ErrNotFound))
+
+	fmt.Println(store.Len())
+
+	err = store.Delete("alice")
+
+	fmt.Println(err)
+
+	fmt.Println(store.Len())
+
+	err = store.Delete("alice")
+	fmt.Println(err)
+	fmt.Println(errors.Is(err, kvstore.ErrNotFound))
+
 }

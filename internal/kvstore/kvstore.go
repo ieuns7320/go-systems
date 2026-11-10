@@ -27,3 +27,17 @@ func (s *Store) Get(key string) ([]byte, error) {
 	}
 	return value, nil
 }
+
+func (s *Store) Delete(key string) error {
+	_, ok := s.data[key]
+
+	if !ok {
+		return fmt.Errorf("delete %q: %w", key, ErrNotFound)
+	}
+	delete(s.data, key)
+	return nil
+}
+
+func (s *Store) Len() int {
+	return len(s.data)
+}
