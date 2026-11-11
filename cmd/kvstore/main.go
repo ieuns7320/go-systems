@@ -9,7 +9,7 @@ import (
 func main() {
 	scenarioA()
 	scenarioB()
-
+	scenarioC()
 }
 
 func scenarioA() {
@@ -32,5 +32,18 @@ func scenarioB() {
 	value, _ = store.Get("k2")
 
 	fmt.Println(string(value))
+
+}
+
+func scenarioC() {
+	store := kvstore.New()
+
+	store.Set("carol", []byte("Nice to meet you"))
+	store.Set("alice", []byte("My name is alice"))
+	store.Set("bob", []byte("Hello, I'm bob"))
+
+	sorted := store.Keys()
+
+	fmt.Println(sorted)
 
 }

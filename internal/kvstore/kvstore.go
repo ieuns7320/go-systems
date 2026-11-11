@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"maps"
+	"slices"
 )
 
 var ErrNotFound = errors.New("key not found")
@@ -43,4 +45,8 @@ func (s *Store) Delete(key string) error {
 
 func (s *Store) Len() int {
 	return len(s.data)
+}
+
+func (s *Store) Keys() []string {
+	return slices.Sorted(maps.Keys(s.data))
 }
