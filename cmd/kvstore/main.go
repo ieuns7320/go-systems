@@ -1,33 +1,36 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 
 	"github.com/ieuns7320/go-systems/internal/kvstore"
 )
 
 func main() {
-	store := kvstore.New()
-	store.Set("alice", []byte("hello"))
+	scenarioA()
+	scenarioB()
 
-	value, _ := store.Get("alice")
-	_, err := store.Get("missing")
+}
+
+func scenarioA() {
+	store := kvstore.New()
+
+	buf := []byte("hello")
+	store.Set("k1", buf)
+	buf[0] = 'j'
+
+	value, _ := store.Get("k1")
+	fmt.Println(string(value))
+}
+
+func scenarioB() {
+	store := kvstore.New()
+	store.Set("k2", []byte("world"))
+	value, _ := store.Get("k2")
+	value[0] = 'W'
+
+	value, _ = store.Get("k2")
 
 	fmt.Println(string(value))
-	fmt.Println(err)
-	fmt.Println(errors.Is(err, kvstore.ErrNotFound))
-
-	fmt.Println(store.Len())
-
-	err = store.Delete("alice")
-
-	fmt.Println(err)
-
-	fmt.Println(store.Len())
-
-	err = store.Delete("alice")
-	fmt.Println(err)
-	fmt.Println(errors.Is(err, kvstore.ErrNotFound))
 
 }

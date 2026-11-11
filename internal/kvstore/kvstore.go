@@ -1,6 +1,7 @@
 package kvstore
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 )
@@ -17,7 +18,8 @@ func New() *Store {
 }
 
 func (s *Store) Set(key string, value []byte) {
-	s.data[key] = value
+	clone := bytes.Clone(value)
+	s.data[key] = clone
 }
 
 func (s *Store) Get(key string) ([]byte, error) {
@@ -25,7 +27,8 @@ func (s *Store) Get(key string) ([]byte, error) {
 	if !ok {
 		return nil, fmt.Errorf("get %q: %w", key, ErrNotFound)
 	}
-	return value, nil
+	clone := bytes.Clone(value)
+	return clone, nil
 }
 
 func (s *Store) Delete(key string) error {
