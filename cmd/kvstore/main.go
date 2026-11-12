@@ -1,49 +1,88 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"os"
+	"strings"
 
 	"github.com/ieuns7320/go-systems/internal/kvstore"
 )
 
 func main() {
-	scenarioA()
-	scenarioB()
-	scenarioC()
-}
-
-func scenarioA() {
 	store := kvstore.New()
 
-	buf := []byte("hello")
-	store.Set("k1", buf)
-	buf[0] = 'j'
+	scanner := bufio.NewScanner(os.Stdin)
 
-	value, _ := store.Get("k1")
-	fmt.Println(string(value))
-}
+	for {
+		fmt.Printf("> ")
 
-func scenarioB() {
-	store := kvstore.New()
-	store.Set("k2", []byte("world"))
-	value, _ := store.Get("k2")
-	value[0] = 'W'
+		ok := scanner.Scan()
 
-	value, _ = store.Get("k2")
+		if !ok {
+			break
+		}
 
-	fmt.Println(string(value))
+		line := scanner.Text()
 
-}
+		parts := strings.Fields(line)
 
-func scenarioC() {
-	store := kvstore.New()
+		if len(parts) == 0 {
+			continue
+		}
 
-	store.Set("carol", []byte("Nice to meet you"))
-	store.Set("alice", []byte("My name is alice"))
-	store.Set("bob", []byte("Hello, I'm bob"))
+		switch parts[0] {
 
-	sorted := store.Keys()
+		case "set":
+			if len(parts) != 3 {
+				fmt.Fprintln(os.Stderr, "error: usage: set <key> <value>")
+				continue
+			}
+			store.Set(parts[1], []byte(parts[2]))
+			fmt.Println("OK")
 
-	fmt.Println(sorted)
+		case "get":
+			if len(parts) != 2 {
+				fmt.Fprintln(os.Stderr, "error: usage: get <key>")
+				continue
+			}
+			value, err := store.Get(parts[1])
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "error: %v\n", err)
+				continue
+			}
+			fmt.Println(string(value))
+
+		case "delete":
+			if len(parts) != 2 {
+				fmt.Fprintln(os.Stderr, "error: usage: delete <key>")
+				continue
+			}
+			err := store.Delete(parts[1])
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "error: %v\n", err)
+				continue
+			}
+			fmt.Println("OK")
+
+		case "len":
+			fmt.Println(store.Len())
+
+		case "keys":
+			keys := store.Keys()
+			fmt.Println(keys)
+
+		default:
+			fmt.Fprintf(os.Stderr, "error: unknown command %q\n", parts[0])
+		}
+
+	}
+
+	err := scanner.Err()
+
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
 
 }
